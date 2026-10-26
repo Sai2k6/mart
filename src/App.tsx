@@ -413,6 +413,42 @@ export function App() {
     return () => listener.subscription.unsubscribe();
   }, []);
 
+  // Automatically request location permission and resolve the user's city when available.
+  useEffect(() => {
+    if (!("geolocation" in navigator)) return;
+    navigator.geolocation.getCurrentPosition(
+      async position => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`,
+            { headers: { Accept: "application/json" } }
+          );
+          if (!response.ok) throw new Error("Location lookup failed");
+          const result = await response.json();
+          const address = result.address || {};
+          const city = address.city || address.town || address.village || address.municipality || address.county || "";
+          const state = address.state || "";
+          const postcode = address.postcode || "";
+          const display = [city, state].filter(Boolean).join(", ");
+          if (display) {
+            setSelectedLocation(display);
+            localStorage.setItem("glassmart-location", display);
+            setLocationText(city);
+            setLocationPin(postcode);
+          }
+        } catch (error) {
+          console.warn("Unable to resolve current location.", error);
+        }
+      },
+      error => {
+        // Location is optional; keep the saved/default location if permission is denied.
+        console.info("Location permission was not granted or is unavailable.", error.message);
+      },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+    );
+  }, []);
+
   useEffect(() => {
     localStorage.setItem("glassmart-cart", JSON.stringify(cart));
   }, [cart]);
@@ -1010,8 +1046,47 @@ export function App() {
             <p className="eyebrow">DELIVERY LOCATION</p>
             <h2>Select Delivery Destination</h2>
             <p className="modal-sub">
-              Enter your city or postal PIN code to check regional hardware availability.
+              We can detect your city automatically if you allow location access, or you can enter it manually.
             </p>
+            <button
+              type="button"
+              className="secondary-btn"
+              style={{ width: "100%", marginBottom: "12px" }}
+              onClick={() => {
+                if (!navigator.geolocation) {
+                  notify("Location is not supported by this browser.");
+                  return;
+                }
+                navigator.geolocation.getCurrentPosition(
+                  async position => {
+                    try {
+                      const { latitude, longitude } = position.coords;
+                      const response = await fetch(
+                        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`,
+                        { headers: { Accept: "application/json" } }
+                      );
+                      if (!response.ok) throw new Error("Location lookup failed");
+                      const result = await response.json();
+                      const address = result.address || {};
+                      const city = address.city || address.town || address.village || address.municipality || address.county || "";
+                      const state = address.state || "";
+                      const postcode = address.postcode || "";
+                      setLocationText(city);
+                      setLocationPin(postcode);
+                      const display = [city, state].filter(Boolean).join(", ");
+                      if (display) selectLocation(display);
+                      else notify("Could not identify your city. Please enter it manually.");
+                    } catch {
+                      notify("Could not detect your city. Please enter it manually.");
+                    }
+                  },
+                  () => notify("Location permission denied. You can enter your city manually."),
+                  { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
+                );
+              }}
+            >
+              Use My Current Location
+            </button>
             <input
               value={locationText}
               onChange={e => setLocationText(e.target.value)}

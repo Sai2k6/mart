@@ -208,7 +208,7 @@ export const CORE_CATEGORIES: CategoryCardMeta[] = [
   },
   {
     id: "coat-hooks",
-    name: "Coat Hooks",
+    name: "Goat Hooks",
     code: "CAT-007",
     badge: "ZINC ALLOY",
     countText: "24 Options",
@@ -797,8 +797,8 @@ export const hardwareGroups: HwGroup[] = [
       },
       {
         id: "coat-hooks",
-        name: "Coat Hooks",
-        description: "Wall mounted coat & robe hooks in various finishes",
+        name: "Goat Hooks",
+        description: "Aluminium goat hooks in bright, antique and gold finishes",
         variants: [
           { brands: ["Jyothi", "Crane"], sizes: ["4\""], materials: ["Aluminium"], finishes: ["Bright", "Antique", "Gold"], stock: 35 },
         ],

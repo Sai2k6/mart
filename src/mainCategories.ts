@@ -27,7 +27,6 @@ export const HARDWARE_SUBCATEGORIES = [
   "Aldrops",
   "Latches",
   "Handles",
-  "Coat Hooks",
   "Goat Hooks",
   "Baby Latches",
   "Door Stoppers",
@@ -35,5 +34,4 @@ export const HARDWARE_SUBCATEGORIES = [
   "Wardrobe Handles & Knobs",
   "Box Hinges",
   "Telescope Channels",
-  "Telescopic Channel",
 ];

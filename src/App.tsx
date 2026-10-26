@@ -1059,13 +1059,19 @@ export function App() {
               <div className="editorial-hero-overlay"></div>
             </div>
 
-            {/* TOP FLOATING SUB-NAV */}
+            {/* MAIN CATEGORY NAVIGATION */}
             <div className="editorial-hero-nav">
-              <button onClick={() => { setSelectedMainCategory("All"); setSelectedCategory("All"); navigate("products"); }}>COLLECTION</button>
-              <span className="dot">•</span>
-              <button onClick={() => { setSelectedCategory("plywood"); navigate("products"); }}>PLYWOOD & BOARDS</button>
-              <span className="dot">•</span>
-              <button onClick={() => { setSelectedCategory("doors"); navigate("products"); }}>DOORS</button>
+              {MAIN_CATEGORIES.map((cat, idx) => (
+                <span key={cat.id} className="hero-category-link">
+                  {idx > 0 && <span className="dot">•</span>}
+                  <button onClick={() => {
+                    setSelectedMainCategory(cat.name);
+                    setSelectedCategory("All");
+                    setSelectedSubcategory("All");
+                    navigate("products");
+                  }}>{cat.name.toUpperCase()}</button>
+                </span>
+              ))}
               <span className="dot">•</span>
               <button onClick={() => navigate("services")}>SERVICES & ABOUT</button>
             </div>

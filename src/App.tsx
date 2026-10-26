@@ -845,16 +845,18 @@ export function App() {
           <div className="navbar-search-pill">
             <div className="search-category-select-wrap">
               <select
-                value={selectedCategory}
+                value={selectedMainCategory}
                 onChange={e => {
-                  setSelectedCategory(e.target.value);
+                  setSelectedMainCategory(e.target.value);
+                  setSelectedCategory("All");
+                  setSelectedSubcategory("All");
                   navigate("products");
                 }}
                 className="search-category-dropdown"
               >
-                <option value="All">All Hardware ▾</option>
-                {CORE_CATEGORIES.map(cat => (
-                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                <option value="All">All Categories ▾</option>
+                {MAIN_CATEGORIES.map(cat => (
+                  <option key={cat.id} value={cat.name}>{cat.name}</option>
                 ))}
               </select>
             </div>
@@ -1227,9 +1229,11 @@ export function App() {
             <div>
               <p className="eyebrow">HARDWARE CATALOG</p>
               <h1>
-                {selectedCategory === "All"
-                  ? "All Hardware Products"
-                  : CORE_CATEGORIES.find(c => c.id === selectedCategory)?.name || selectedCategory}
+                {selectedMainCategory !== "All"
+                  ? selectedMainCategory
+                  : selectedCategory === "All"
+                    ? "All Products"
+                    : CORE_CATEGORIES.find(c => c.id === selectedCategory || c.name === selectedCategory)?.name || selectedCategory}
               </h1>
               <p className="catalog-sub">
                 Showing {filteredCatalogCards.length} verified hardware items
@@ -1280,14 +1284,18 @@ export function App() {
                 <label className="filter-label">Category</label>
                 <select
                   value={selectedCategory}
-                  onChange={e => setSelectedCategory(e.target.value)}
+                  onChange={e => {
+                    setSelectedCategory(e.target.value);
+                    setSelectedMainCategory("All");
+                  }}
                 >
-                  <option value="All">All Categories</option>
-                  {CORE_CATEGORIES.map(c => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
+                  <option value="All">All Subcategories</option>
+                  <optgroup label="Plywood">
+                    {PLYWOOD_SUBCATEGORIES.map(name => <option key={name} value={name}>{name}</option>)}
+                  </optgroup>
+                  <optgroup label="Hardware">
+                    {HARDWARE_SUBCATEGORIES.map(name => <option key={name} value={name}>{name}</option>)}
+                  </optgroup>
                 </select>
               </div>
 

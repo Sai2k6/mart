@@ -1061,7 +1061,7 @@ export function App() {
 
             {/* TOP FLOATING SUB-NAV */}
             <div className="editorial-hero-nav">
-              <button onClick={() => { setSelectedCategory("All"); navigate("products"); }}>COLLECTION</button>
+              <button onClick={() => { setSelectedMainCategory("All"); setSelectedCategory("All"); navigate("products"); }}>COLLECTION</button>
               <span className="dot">•</span>
               <button onClick={() => { setSelectedCategory("plywood"); navigate("products"); }}>PLYWOOD & BOARDS</button>
               <span className="dot">•</span>
@@ -2333,14 +2333,14 @@ export function App() {
           </div>
 
           <div className="footer-col">
-            <h4>12 Core Categories</h4>
+            <h4>Shop Categories</h4>
             <ul>
-              {CORE_CATEGORIES.slice(0, 6).map(c => (
+              {MAIN_CATEGORIES.map(c => (
                 <li key={c.id}>
                   <button
                     onClick={() => {
-                      setSelectedMainCategory("All");
-                      setSelectedCategory(c.id);
+                      setSelectedMainCategory(c.name);
+                      setSelectedCategory("All");
                       navigate("products");
                     }}
                   >

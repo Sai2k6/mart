@@ -8,6 +8,7 @@ import spaceInteriorPanel from "./assets/space_interior_panel.jpg";
 import signaturePlywood from "./assets/signature_plywood.jpg";
 import signatureDoor from "./assets/signature_door.jpg";
 import signatureNfc from "./assets/signature_nfc.jpg";
+import { MAIN_CATEGORIES, PLYWOOD_SUBCATEGORIES, HARDWARE_SUBCATEGORIES } from "./mainCategories";
 import {
   HARDWARE_MRP,
   hardwareGroups,
@@ -301,6 +302,7 @@ export function App() {
   const [searchFocused, setSearchFocused] = useState(false);
 
   // Filter State for Product Catalog
+  const [selectedMainCategory, setSelectedMainCategory] = useState("All");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedSubcategory, setSelectedSubcategory] = useState("All");
   const [selectedBrand, setSelectedBrand] = useState("All");
@@ -496,6 +498,14 @@ export function App() {
           if (!terms.every(term => text.includes(term))) return false;
         }
 
+        // Top-level Glassmart category filter
+        if (selectedMainCategory !== "All") {
+          const categoryName = item.categoryName.toLowerCase();
+          if (selectedMainCategory === "Plywood" && !PLYWOOD_SUBCATEGORIES.some(name => name.toLowerCase() === categoryName)) return false;
+          if (selectedMainCategory === "Hardware" && !HARDWARE_SUBCATEGORIES.some(name => name.toLowerCase() === categoryName)) return false;
+          if (["Glass", "Laminates", "Modular Kitchen"].includes(selectedMainCategory)) return false;
+        }
+
         // Category filter
         if (selectedCategory !== "All") {
           const catObj = CORE_CATEGORIES.find(
@@ -553,6 +563,7 @@ export function App() {
   }, [
     allCatalogCards,
     searchQuery,
+    selectedMainCategory,
     selectedCategory,
     selectedSubcategory,
     selectedBrand,
@@ -964,25 +975,19 @@ export function App() {
         </div>
       </header>
 
-      {/* 12 CORE CATEGORIES BAR */}
+      {/* MAIN CATEGORY NAVIGATION */}
       {page !== "home" && userRole !== "admin" && (
         <nav className={`category-nav-bar ${mobileMenuOpen ? "mobile-open" : ""}`}>
           <div className="category-nav-scroll">
-            <button
-              className={`cat-nav-item ${selectedCategory === "All" ? "active" : ""}`}
-              onClick={() => {
-                setSelectedCategory("All");
-                navigate("products");
-              }}
-            >
-              All Hardware
-            </button>
-            {CORE_CATEGORIES.map(cat => (
+            {MAIN_CATEGORIES.map(cat => (
               <button
-                key={cat.id}
-                className={`cat-nav-item ${selectedCategory === cat.id ? "active" : ""}`}
+                key={cat.name}
+                className={`cat-nav-item ${selectedMainCategory === cat.name ? "active" : ""}`}
                 onClick={() => {
-                  setSelectedCategory(cat.id);
+                  setSelectedMainCategory(cat.name);
+                  setSelectedCategory("All");
+                  setSelectedSubcategory("All");
+                  setSearchQuery("");
                   navigate("products");
                 }}
               >
@@ -1075,15 +1080,17 @@ export function App() {
             </div>
           </section>
 
-          {/* BLUEPRINT CATEGORY STRIP */}
+          {/* FIVE MAIN CATEGORIES */}
           <section className="blueprint-category-strip">
             <div className="blueprint-track">
-              {CORE_CATEGORIES.map((cat, idx) => (
+              {MAIN_CATEGORIES.map((cat, idx) => (
                 <div
-                  key={cat.id}
+                  key={cat.name}
                   className="blueprint-card"
                   onClick={() => {
-                    setSelectedCategory(cat.id);
+                    setSelectedMainCategory(cat.name);
+                    setSelectedCategory("All");
+                    setSelectedSubcategory("All");
                     navigate("products");
                   }}
                 >
@@ -2324,6 +2331,7 @@ export function App() {
                 <li key={c.id}>
                   <button
                     onClick={() => {
+                      setSelectedMainCategory("All");
                       setSelectedCategory(c.id);
                       navigate("products");
                     }}

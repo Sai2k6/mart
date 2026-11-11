@@ -164,9 +164,15 @@ export default function AdminDashboard({ navigate, onLogout }: AdminDashboardPro
 
   const productNames = products.map(p => p.name);
   const productCategories = products.map(p => p.category);
-  const approvedProductCategories = [...PLYWOOD_SUBCATEGORIES, ...MAIN_CATEGORIES.filter(c => !["Plywood", "Hardware"].includes(c.name)).map(c => c.name)];
+  const approvedProductCategories = categories.length
+    ? categories.filter(c => {
+        const parent = categories.find(p => p.id === c.parent_id);
+        return (parent?.name === "Plywood") || (!c.parent_id && !["Plywood", "Hardware"].includes(c.name));
+      }).map(c => c.name)
+    : [...PLYWOOD_SUBCATEGORIES, ...MAIN_CATEGORIES.filter(c => !["Plywood", "Hardware"].includes(c.name)).map(c => c.name)];
   const hardwareGroups = hardwareProducts.map(h => h.group_name);
-  const hardwareCategories = [...HARDWARE_SUBCATEGORIES, ...hardwareProducts.map(h => h.category_name)];
+  const hardwareParent = categories.find(c => !c.parent_id && c.name === "Hardware");
+  const hardwareCategories = [...(hardwareParent ? categories.filter(c => c.parent_id === hardwareParent.id).map(c => c.name) : HARDWARE_SUBCATEGORIES), ...hardwareProducts.map(h => h.category_name)];
   const hardwareBrands = hardwareProducts.map(h => h.brand);
   const variantSizes = hardwareVariants.map(v => v.size);
   const variantMaterials = hardwareVariants.map(v => v.material);
